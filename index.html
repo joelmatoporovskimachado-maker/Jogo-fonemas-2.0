@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mundo dos Fonemas</title>
+
+  <style>
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background: linear-gradient(135deg,#7ed6df,#74b9ff);
+      min-height:100vh;
+      padding:20px;
+    }
+
+    .container{
+      max-width:1000px;
+      margin:auto;
+    }
+
+    .card{
+      background:white;
+      border-radius:25px;
+      padding:30px;
+      box-shadow:0 10px 25px rgba(0,0,0,0.15);
+      text-align:center;
+    }
+
+    h1{
+      color:#2d3436;
+      font-size:3rem;
+      margin-bottom:10px;
+    }
+
+    .subtitle{
+      color:#555;
+      margin-bottom:25px;
+      font-size:1.2rem;
+    }
+
+    .word{
+      font-size:4rem;
+      letter-spacing:10px;
+      margin:30px 0;
+      color:#6c5ce7;
+      font-weight:bold;
+    }
+
+    .buttons{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:15px;
+      margin-top:20px;
+    }
+
+    button{
+      border:none;
+      border-radius:15px;
+      padding:18px;
+      font-size:1.3rem;
+      cursor:pointer;
+      transition:0.3s;
+      font-weight:bold;
+    }
+
+    .letter-btn{
+      background:#ffeaa7;
+    }
+
+    .letter-btn:hover{
+      transform:scale(1.05);
+      background:#fdcb6e;
+    }
+
+    .menu-btn{
+      background:#6c5ce7;
+      color:white;
+      margin-top:20px;
+    }
+
+    .menu-btn:hover{
+      background:#5a4bd6;
+      transform:scale(1.05);
+    }
+
+    .correct{
+      background:#55efc4 !important;
+      animation:pop 0.5s;
+    }
+
+    .wrong{
+      background:#ff7675 !important;
+      animation:shake 0.5s;
+    }
+
+    @keyframes pop{
+      0%{transform:scale(1);}
+      50%{transform:scale(1.15);}
+      100%{transform:scale(1);}
+    }
+
+    @keyframes shake{
+      0%{transform:translateX(0);}
+      25%{transform:translateX(-10px);}
+      50%{transform:translateX(10px);}
+      75%{transform:translateX(-10px);}
+      100%{transform:translateX(0);}
+    }
+
+    .score{
+      margin-top:20px;
+      font-size:1.5rem;
+      color:#2d3436;
+    }
+
+    .reward{
+      margin-top:20px;
+      font-size:2rem;
+      min-height:50px;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    .sentence-box{
+      background:#f1f2f6;
+      padding:25px;
+      border-radius:20px;
+      margin-top:20px;
+    }
+
+    .sentence{
+      font-size:2rem;
+      color:#2d3436;
+      margin-bottom:20px;
+    }
+
+    .stars{
+      font-size:2rem;
+      animation:starsAnim 1s infinite alternate;
+    }
+
+    @keyframes starsAnim{
+      from{transform:scale(1);}
+      to{transform:scale(1.1);}
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="card">
+
+    <h1>🌟 Mundo dos Fonemas 🌟</h1>
+
+    <p class="subtitle">
+      Aprenda brincando com M, N e L!
+    </p>
+
+    <!-- PALAVRAS -->
+    <div id="wordGame">
+
+      <h2>Complete a Palavra</h2>
+
+      <div class="word" id="wordDisplay"></div>
+
+      <div class="buttons" id="options"></div>
+
+      <div class="score">
+        Pontos: <span id="score">0</span>
+      </div>
+
+      <div class="reward" id="reward"></div>
+
+    </div>
+
+    <!-- FRASES -->
+    <div id="sentenceGame" class="hidden">
+
+      <h2>Leia e Ouça a Frase</h2>
+
+      <div class="sentence-box">
+
+        <div class="sentence" id="sentenceText"></div>
+
+        <button class="menu-btn" onclick="speakSentence()">
+          🔊 Ouvir Frase
+        </button>
+
+      </div>
+
+    </div>
+
+    <button class="menu-btn" onclick="newWord()">
+      🎮 Nova Palavra
+    </button>
+
+    <button class="menu-btn" onclick="showWords()">
+      🔤 Palavras
+    </button>
+
+    <button class="menu-btn" onclick="showSentences()">
+      📚 Frases
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+
+const words = [
+
+  { word: "_ALA", answer: "M" },
+  { word: "_INA", answer: "M" },
+  { word: "_IMA", answer: "L" },
+  { word: "_OLA", answer: "M" },
+  { word: "_ANO", answer: "M" },
+  { word: "_INA", answer: "N" },
+  { word: "SO_A", answer: "F" },
+  { word: "_ALA", answer: "F" },
+  { word: "_ONA", answer: "L" },
+  { word: "_IMO", answer: "L" },
+  { word: "LI_A", answer: "M" },
+  { word: "MO_A", answer: "L" }
+
+];
+
+const sentences = [
+
+  "A mala no sofá.",
+  "A mola na mala.",
+  "A Nina fala.",
+  "O mano fala.",
+  "A mina na sala.",
+  "A lona no sofá.",
+  "A mala na sala.",
+  "A Nina no sofá.",
+  "O mano na fila.",
+  "A mola no sino."
+
+];
+
+const letters = ["M","N","L","F","S"];
+
+let score = 0;
+
+function speak(text){
+
+  const speech = new SpeechSynthesisUtterance(text);
+
+  speech.lang = "pt-BR";
+  speech.rate = 0.85;
+  speech.pitch = 1.2;
+  speech.volume = 1;
+
+  speechSynthesis.speak(speech);
+
+}
+
+function newWord(){
+
+  document.getElementById("reward").innerHTML = "";
+
+  const selected =
+    words[Math.floor(Math.random() * words.length)];
+
+  document.getElementById("wordDisplay").innerText =
+    selected.word;
+
+  const options = document.getElementById("options");
+
+  options.innerHTML = "";
+
+  let shuffled =
+    [...letters]
+      .sort(() => Math.random() - 0.5)
+      .slice(0,3);
+
+  if(!shuffled.includes(selected.answer)){
+    shuffled[0] = selected.answer;
+  }
+
+  shuffled =
+    shuffled.sort(() => Math.random() - 0.5);
+
+  shuffled.forEach(letter => {
+
+    const button = document.createElement("button");
+
+    button.classList.add("letter-btn");
+
+    button.innerText = letter;
+
+    button.onclick = () =>
+      checkAnswer(button, letter, selected.answer);
+
+    options.appendChild(button);
+
+  });
+
+  speak("Complete a palavra!");
+
+}
+
+function checkAnswer(button, selected, correct){
+
+  if(selected === correct){
+
+    button.classList.add("correct");
+
+    score++;
+
+    document.getElementById("score").innerText = score;
+
+    document.getElementById("reward").innerHTML =
+      "<div class='stars'>⭐ Muito bem! ⭐</div>";
+
+    speak("Parabéns! Você acertou!");
+
+  } else {
+
+    button.classList.add("wrong");
+
+    speak("Tente novamente!");
+
+  }
+
+}
+
+function showSentences(){
+
+  document.getElementById("wordGame")
+    .classList.add("hidden");
+
+  document.getElementById("sentenceGame")
+    .classList.remove("hidden");
+
+  newSentence();
+
+}
+
+function showWords(){
+
+  document.getElementById("sentenceGame")
+    .classList.add("hidden");
+
+  document.getElementById("wordGame")
+    .classList.remove("hidden");
+
+}
+
+function newSentence(){
+
+  const sentence =
+    sentences[Math.floor(Math.random() * sentences.length)];
+
+  document.getElementById("sentenceText").innerText =
+    sentence;
+
+  speak(sentence);
+
+}
+
+function speakSentence(){
+
+  const sentence =
+    document.getElementById("sentenceText").innerText;
+
+  speak(sentence);
+
+  setTimeout(() => {
+    newSentence();
+  }, 2500);
+
+}
+
+window.onload = () => {
+
+  newWord();
+
+  speak("Bem-vindo ao Mundo dos Fonemas!");
+
+};
+
+</script>
+
+</body>
+</html>
